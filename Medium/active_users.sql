@@ -94,25 +94,19 @@ INSERT INTO Logins (id, login_date) VALUES
 (7, '2020-06-10');
 
 
-select 
+select
 c.id,
-name
-from 
-(select
-*,
-case when date_difference = lead(date_difference) over (partition by id) then 1 else 0 end as flag
+accounts.name
 from
 (select 
+B.id
+from (select 
 *,
-lead(login_date) over (partition by id order by login_date asc) as next_login_date,
-(lead(login_date) over (partition by id order by login_date asc)) - login_date as date_difference
-from (
-	select 
-	* 
-	from logins
-	group by id, login_date
-)A)B)C
-inner join accounts on C.id = accounts.id
-group by c.id, accounts.name
-having sum(flag) >= 3
-;
+case when 
+cast(login_date + interval '4 day' as date) = lead(login_date, 4) over (partition by id order by login_date asc)
+then 1
+else 0 end as flag
+from
+(select distinct * from logins) A) B
+where flag = 1) C
+inner join accounts on accounts.id = C.id;
