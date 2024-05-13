@@ -70,3 +70,8 @@ INSERT INTO Employees (employee_id, employee_name, manager_id) VALUES
 (8, 'Jhon', 3),
 (9, 'Angela', 8),
 (77, 'Robert', 1);
+
+select A.employee_id from employees A
+inner join employees B on A.manager_id = B.employee_id
+inner join employees C on B.manager_id = C.employee_id
+where C.manager_id = 1 and A.employee_id != C.manager_id;
