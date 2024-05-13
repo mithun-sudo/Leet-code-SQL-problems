@@ -60,4 +60,13 @@ INSERT INTO Views (article_id, author_id, viewer_id, view_date) VALUES
 (3, 4, 4, '2019-07-21'),
 (3, 4, 4, '2019-07-21');
 
+select 
+viewer_id as id
+from views
+group by viewer_id, view_date
+having count(distinct article_id) > 1
+order by viewer_id
+
+
+
 
