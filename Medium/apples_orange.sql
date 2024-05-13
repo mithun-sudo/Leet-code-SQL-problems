@@ -50,3 +50,34 @@
 
 -- Solution
 
+-- Table definition for Sales
+CREATE TABLE Sales (
+    sale_date DATE,
+    fruit varchar(100),
+    sold_num INT,
+    PRIMARY KEY (sale_date, fruit)
+);
+
+-- Insert statements for Sales
+INSERT INTO Sales (sale_date, fruit, sold_num) VALUES
+('2020-05-01', 'apples', 10),
+('2020-05-01', 'oranges', 8),
+('2020-05-02', 'apples', 15),
+('2020-05-02', 'oranges', 15),
+('2020-05-03', 'apples', 20),
+('2020-05-03', 'oranges', 0),
+('2020-05-04', 'apples', 15),
+('2020-05-04', 'oranges', 16);
+
+
+select
+sale_date,
+diff
+from
+(select 
+*,
+sold_num - lead(sold_num) over (partition by sale_date order by fruit asc) as diff
+from sales) A
+where diff is not null;
+
+
