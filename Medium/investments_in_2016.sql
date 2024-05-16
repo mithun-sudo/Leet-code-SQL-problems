@@ -55,3 +55,15 @@ VALUES
 (2, 20, 20, 20, 20),
 (3, 10, 30, 20, 20),
 (4, 10, 40, 40, 40);
+
+
+select
+sum(tiv_2016) as TIV_2016
+from
+(select
+*,
+tiv_2015 in (select tiv_2015 from insurance t2 where t2.pid != t1.pid) as tiv_2015_flag,
+concat(lat, lon) not in (select concat(lat, lon) from insurance t2 where t2.pid != t1.pid) as location_flag
+from
+insurance t1) A
+where tiv_2015_flag is true and location_flag is true
