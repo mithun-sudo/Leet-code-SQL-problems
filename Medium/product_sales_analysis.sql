@@ -78,3 +78,15 @@ INSERT INTO Product (product_id, product_name) VALUES
 (200, 'Apple'),
 (300, 'Samsung');
 
+select
+product_id,
+year,
+quantity, 
+price
+from
+(select
+*,
+rank() over (partition by product_id order by year) as rn
+from sales) A
+where rn = 1
+
