@@ -82,15 +82,43 @@ CREATE TABLE Matches (
     FOREIGN KEY (guest_team) REFERENCES Teams(team_id)
 );
 
-INSERT INTO Teams (team_id, team_name) VALUES
-(1, 'Team A'),
-(2, 'Team B'),
-(3, 'Team C'),
-(4, 'Team D');
+INSERT INTO Teams (team_id, team_name) VALUES (10, 'Leetcode FC');
+INSERT INTO Teams (team_id, team_name) VALUES (20, 'NewYork FC');
+INSERT INTO Teams (team_id, team_name) VALUES (30, 'Atlanta FC');
+INSERT INTO Teams (team_id, team_name) VALUES (40, 'Chicago FC');
+INSERT INTO Teams (team_id, team_name) VALUES (50, 'Toronto FC');
 
-INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES
-(1, 1, 2, 3, 2),
-(2, 3, 4, 1, 1),
-(3, 1, 3, 2, 3),
-(4, 2, 4, 0, 1),
-(5, 4, 1, 2, 2);
+INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES (1, 10, 20, 3, 0);
+INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES (2, 30, 10, 2, 2);
+INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES (3, 10, 50, 5, 1);
+INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES (4, 20, 30, 1, 0);
+INSERT INTO Matches (match_id, host_team, guest_team, host_goals, guest_goals) VALUES (5, 50, 30, 1, 0);
+
+with temp as (select
+*,
+case 
+when host_goals > guest_goals then 3 
+when host_goals = guest_goals then 1
+when host_goals < guest_goals then 0 end as points_per_match_of_host,
+case 
+when host_goals < guest_goals then 3 
+when host_goals = guest_goals then 1
+when host_goals > guest_goals then 0 end as points_per_match_of_guest
+from matches)
+select 
+team_id,
+team_name,
+coalesce(points, 0) as points
+from teams
+left join 
+(select
+team,
+sum(points) as points
+from 
+(select host_team as team, points_per_match_of_host as points from temp
+union all
+select guest_team, points_per_match_of_guest from temp) A
+group by team) B on teams.team_id = B.team
+order by points desc
+
+
